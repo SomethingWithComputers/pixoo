@@ -19,18 +19,42 @@ pixoo.fill((255, 0, 68))
 pixoo.fill_rgb(255, 0, 68)
 
 '''
-Set a pixel at a location to a given color (starting top left)
+Draw a filled rectangle from top-left to bottom-right
 '''
-pixoo.set_pixel((0, 0), (255, 255, 255))  # Sets the top left pixel to full white
+pixoo.draw_filled_rectangle((1, 1), (62, 62), (255, 99, 0))
 # or
-pixoo.set_pixel_at_location_rgb(0, 0, 255, 255, 255)
+pixoo.draw_filled_rectangle_from_top_left_to_bottom_right_rgb(1, 1, 62, 62, 255, 99, 0)
 
 '''
-Set a pixel at the given index (each pixel has its own index based on the position on the display, starting top left
+Draw a pixel at a location to a given color (starting top left)
 '''
-pixoo.set_pixel_at_index(127, (255, 255, 255))  # Set the pixel at (63, 1) to full white
+pixoo.draw_pixel((0, 0), (255, 255, 255))  # Sets the top left pixel to full white
 # or
-pixoo.set_pixel_at_index_rgb(127, 255, 255, 255)
+pixoo.draw_pixel_at_location_rgb(0, 0, 255, 255, 255)
+
+'''
+Draw a pixel at the given index (each pixel has its own index based on the position on the display, starting top left
+'''
+pixoo.draw_pixel_at_index(127, (255, 255, 255))  # Set the pixel at (63, 1) to full white
+# or
+pixoo.draw_pixel_at_index_rgb(127, 255, 255, 255)
+
+'''
+Draw a string of text at a given position with a given color using the PICO-8 font
+The font's glyphs are at a maximum 3 pixels wide and 5 pixels high. We're using 4 pixels per glyph for nicer kerning
+Supported characters so far are:
+```
+0123456789
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+!'()+,-<=>?[]^_:./{|}~
+```
+This will draw text to the buffer (so call `push()`) and it's not the same as `send_text` (and therefore less buggy)
+'''
+pixoo.draw_text('Hello there..', (0, 0), (0, 255, 0))
+pixoo.draw_text('GENERAL KENOBI', (0, 6), (255, 0, 0))
+# or
+pixoo.draw_text_at_location_rgb('Neat', 0, 6, 255, 255, 0)
 
 '''
 Load and add an image to the buffer.
@@ -41,13 +65,20 @@ The image can be resized fit for pixel art or smooth: ImageResampleMode.PIXEL_AR
 If a location is provided, the image might be cut off the sides of the display based on the location.
 Locations can be larger than the screen size (though the image would be off-screen) or contain coordinates < 0.
 '''
-pixoo.add_image('tiny.png')  # Adds image at path 'tiny.png' at default location (0, 0)
+pixoo.draw_image('tiny.png')  # Adds image at path 'tiny.png' at default location (0, 0)
 # or
-pixoo.add_image('tiny.png', (12, 16))  # Adds image at path 'tiny.png' at location (12, 16)
+pixoo.draw_image('tiny.png', (12, 16))  # Adds image at path 'tiny.png' at location (12, 16)
 # or
-pixoo.add_image('tiny.png', (-10, -14), ImageResampleMode.SMOOTH)  # Resizes the image but uses anti-aliasing
+pixoo.draw_image('tiny.png', (-10, -14), ImageResampleMode.SMOOTH)  # Resizes the image but uses anti-aliasing
 # or
-pixoo.add_image_at_location('tiny.png', 10, 10)  # Alternative way of providing coordinates
+pixoo.draw_image_at_location('tiny.png', 10, 10)  # Alternative way of providing coordinates
+
+'''
+Draw a line from point start to stop with a given color
+'''
+pixoo.draw_line((10, 12), (32, 54), (90, 12, 255))
+# or
+pixoo.draw_line_from_start_to_stop_rgb(10, 12, 32, 54, 90, 12, 255)
 
 '''
 The push methods pushes the buffer to the screen, needs to be called after you're done with all drawing-type methods
