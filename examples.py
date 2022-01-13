@@ -47,7 +47,7 @@ Supported characters so far are:
 0123456789
 abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
-!'()+,-<=>?[]^_:./{|}~
+!'()+,-<=>?[]^_:./{|}~$@%
 ```
 This will draw text to the buffer (so call `push()`) and it's not the same as `send_text` (and therefore less buggy)
 '''
@@ -60,7 +60,7 @@ pixoo.draw_text_at_location_rgb('Neat', 0, 6, 255, 255, 0)
 Load and add an image to the buffer.
 
 If the image is too large (e.g. larger than 64x64 pixels) it'll be resized to fit the display, keeping aspect ratio
-The image can be resized fit for pixel art or smooth: ImageResampleMode.PIXEL_ART or ImageResampleMode.SMOOTH 
+The image can be resized fit for pixel art or smooth: ImageResampleMode.PIXEL_ART or ImageResampleMode.SMOOTH
 
 If a location is provided, the image might be cut off the sides of the display based on the location.
 Locations can be larger than the screen size (though the image would be off-screen) or contain coordinates < 0.
@@ -130,7 +130,7 @@ The seventh argument is the movement speed of the text in case it doesn't fit th
     **NOTE:** Currently there seems to be no way to stop the movement
 The eight and final argument is the movement direction of the text (optional, default TextScrollDirection.LEFT)
     **NOTE:** Currently TextScrollDirection.RIGHT seems broken on the display
-    
+
 NOTE: Currently this is **not** a drawing method, so it'll add the text over whatever is already on screen
 '''
 # Send text after pushing all your other data, because it'll otherwise be overwritten if it's not animated

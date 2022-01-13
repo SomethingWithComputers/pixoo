@@ -2,6 +2,9 @@
 
 A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi)
 
+A simple working example application using this "rendering" framework can be found
+here: https://github.com/SomethingWithComputers/pixoo-banano
+
 Tested on a Pixoo 64.
 
 ## Installation
@@ -10,7 +13,7 @@ Simply install the required dependencies via PIP. Navigate to the directory wher
 execute:
 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Install the requirements.txt via pip install
@@ -42,7 +45,7 @@ Supported characters so far are:
 0123456789
 abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
-!'()+,-<=>?[]^_:./{|}~
+!'()+,-<=>?[]^_:./{|}~$@%
 ```
 
 ## Known bugs
