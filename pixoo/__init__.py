@@ -90,13 +90,27 @@ class Pixoo:
         self.fill_rgb(r, g, b)
 
     def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE):
+        # init width with 0 in case it is missing - not drawn
+        glyph_width = 0
         matrix = retrieve_glyph(character)
         if matrix is not None:
+            # the matrix is a rectangle with height of 5, so if more than 10 elements, it is 3 columns. had to change some glyphs to match that
+            if len(matrix) > 10:
+                glyph_width = 3
+            elif len(matrix) > 5:
+                glyph_width = 2
+            else:
+                glyph_width = 1
+            # if self.debug:
+            #     print(f'[.] Glyph width: {glyph_width}')
             for index, bit in enumerate(matrix):
                 if bit == 1:
-                    local_x = index % 3
-                    local_y = int(index / 3)
+                    # depending on the number of columns, we need to offset the xy
+                    local_x = index % glyph_width
+                    local_y = int(index / glyph_width)
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
+        # return the 
+        return glyph_width
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255, b=255):
         self.draw_character(character, (x, y), (r, g, b))
@@ -206,11 +220,31 @@ class Pixoo:
         self.draw_pixel((x, y), (r, g, b))
 
     def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE):
+        character_offset = 0
+        last_glyph_width = 0
         for index, character in enumerate(text):
-            self.draw_character(character, (index * 4 + xy[0], xy[1]), rgb)
+            last_glyph_width = self.draw_character(character, (character_offset + xy[0], xy[1]), rgb)
+            # add one pixel to the left for the space between characters
+            character_offset += last_glyph_width + 1
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b):
         self.draw_text(text, (x, y), (r, g, b))
+
+    def calc_text_width(self, text):
+        text_width = 0
+        for index, character in enumerate(text):
+            matrix = retrieve_glyph(character)
+            glyph_width = 0
+            if matrix is not None:
+                if len(matrix) > 10:
+                    glyph_width = 3
+                elif len(matrix) > 5:
+                    glyph_width = 2
+                else:
+                    glyph_width = 1
+                text_width += glyph_width + 1
+        # sub 1 for space after last glyph
+        return text_width - 1
 
     def fill(self, rgb=Palette.BLACK):
         self.__buffer = []
