@@ -3,6 +3,7 @@ import json
 from enum import IntEnum
 from PIL import Image
 import requests
+import time
 
 from ._colors import Palette
 from ._font import retrieve_glyph
@@ -290,10 +291,24 @@ class Pixoo:
     def __clamp_location(self, xy):
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
 
+    # abuse a bug to restart the pixoo
+    def __reboot(self):
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/PlayTFGif',
+            'FileType': 2,
+            "FileName":  "https://c.tenor.com/avChAkNrXigAAAAC/64x64-32x32.gif"
+        }))
+        print('[x] rebooting')
+        # it takes roughly 30 seconds to boot, adding some margin
+        time.sleep(45)
+        self.__load_counter()
+
+
     def __error(self, error):
         if self.debug:
             print('[x] Error on request ' + str(self.__counter))
             print(error)
+            self.__reboot()
 
     def __load_counter(self):
         response = requests.post(self.__url, '{"Command": "Draw/GetHttpGifId"}')
