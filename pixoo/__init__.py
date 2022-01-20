@@ -1,7 +1,7 @@
 import base64
 import json
 from enum import IntEnum
-from PIL import Image
+from PIL import Image, ImageOps
 import requests
 
 from ._colors import Palette
@@ -109,7 +109,7 @@ class Pixoo:
                                                                 bottom_right_y=1, r=0, g=0, b=0):
         self.draw_filled_rectangle((top_left_x, top_left_y), (bottom_right_x, bottom_right_y), (r, g, b))
 
-    def draw_image(self, image_path, xy=(0, 0), image_resample_mode=ImageResampleMode.PIXEL_ART):
+    def draw_image(self, image_path, xy=(0, 0), image_resample_mode=ImageResampleMode.PIXEL_ART, pad_resample=False):
         image = Image.open(image_path)
         size = image.size
         width = size[0]
@@ -117,7 +117,10 @@ class Pixoo:
 
         # See if it needs to be scaled/resized to fit the display
         if width > self.size or height > self.size:
-            image.thumbnail((self.size, self.size), image_resample_mode)
+            if pad_resample:
+                image = ImageOps.pad(image, (self.size, self.size), image_resample_mode)
+            else:
+                image.thumbnail((self.size, self.size), image_resample_mode)
 
             if self.debug:
                 print(
