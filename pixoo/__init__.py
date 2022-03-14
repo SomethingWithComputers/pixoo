@@ -109,8 +109,8 @@ class Pixoo:
                                                                 bottom_right_y=1, r=0, g=0, b=0):
         self.draw_filled_rectangle((top_left_x, top_left_y), (bottom_right_x, bottom_right_y), (r, g, b))
 
-    def draw_image(self, image_path, xy=(0, 0), image_resample_mode=ImageResampleMode.PIXEL_ART, pad_resample=False):
-        image = Image.open(image_path)
+    def draw_image(self, image_path_or_object, xy=(0, 0), image_resample_mode=ImageResampleMode.PIXEL_ART, pad_resample=False):
+        image = image_path_or_object if isinstance(image_path_or_object, Image.Image) else Image.open(image_path_or_object)
         size = image.size
         width = size[0]
         height = size[1]
@@ -124,7 +124,7 @@ class Pixoo:
 
             if self.debug:
                 print(
-                    f'[.] Resized image to fit on screen (saving aspect ratio): "{image_path}" ({width}, {height}) '
+                    f'[.] Resized image to fit on screen (saving aspect ratio): "{image_path_or_object}" ({width}, {height}) '
                     f'-> ({image.size[0]}, {image.size[1]})')
 
         # Convert the loaded image to RGB
@@ -144,8 +144,8 @@ class Pixoo:
 
                 self.draw_pixel((placed_x, placed_y), rgb_image.getpixel(location))
 
-    def draw_image_at_location(self, image_path, x, y, image_resample_mode=ImageResampleMode.PIXEL_ART):
-        self.draw_image(image_path, (x, y), image_resample_mode)
+    def draw_image_at_location(self, image_path_or_object, x, y, image_resample_mode=ImageResampleMode.PIXEL_ART):
+        self.draw_image(image_path_or_object, (x, y), image_resample_mode)
 
     def draw_line(self, start_xy, stop_xy, rgb=Palette.WHITE):
         line = set()
