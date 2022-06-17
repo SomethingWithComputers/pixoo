@@ -45,7 +45,7 @@ Supported characters so far are:
 0123456789
 abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
-!'()+,-<=>?[]^_:./{|}~$@%
+!'()+,-<=>?[]^_:;./{|}~$@%
 ```
 
 ## Known bugs

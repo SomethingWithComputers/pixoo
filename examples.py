@@ -47,7 +47,7 @@ Supported characters so far are:
 0123456789
 abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
-!'()+,-<=>?[]^_:./{|}~$@%
+!'()+,-<=>?[]^_:;./{|}~$@%
 ```
 This will draw text to the buffer (so call `push()`) and it's not the same as `send_text` (and therefore less buggy)
 '''
