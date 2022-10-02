@@ -64,14 +64,16 @@ class Pixoo:
     __buffer = []
     __buffers_send = 0
     __counter = 0
+    __refresh_counter_limit = 32
     __simulator = None
 
-    def __init__(self, address, size=64, debug=False, simulated=False,
+    def __init__(self, address, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
                  simulation_config=SimulatorConfig()):
         assert size in [16, 32, 64], \
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
+        self.refresh_connection_automatically = refresh_connection_automatically
         self.address = address
         self.debug = debug
         self.size = size
@@ -88,6 +90,10 @@ class Pixoo:
 
         # Retrieve the counter
         self.__load_counter()
+
+        # Resetting if needed
+        if self.refresh_connection_automatically and self.__counter > self.__refresh_counter_limit:
+            self.__reset_counter()
 
         # We're going to need a simulator
         if self.simulated:
@@ -349,7 +355,7 @@ class Pixoo:
     def __load_counter(self):
         # Just assume it's starting at the beginning if we're simulating
         if self.simulated:
-            self.__counter = 0
+            self.__counter = 1
             return
 
         response = requests.post(self.__url, '{"Command": "Draw/GetHttpGifId"}')
@@ -365,6 +371,11 @@ class Pixoo:
 
         # Add to the internal counter
         self.__counter = self.__counter + 1
+
+        # Check if we've passed the limit and reset the counter for the animation remotely
+        if self.refresh_connection_automatically and self.__counter >= self.__refresh_counter_limit:
+            self.__reset_counter()
+            self.__counter = 1
 
         if self.debug:
             print(f'[.] Counter set to {self.__counter}')
@@ -395,6 +406,21 @@ class Pixoo:
 
             if self.debug:
                 print(f'[.] Pushed {self.__buffers_send} buffers')
+
+    def __reset_counter(self):
+        if self.debug:
+            print(f'[.] Resetting counter remotely')
+
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Draw/ResetHttpGifId'
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
 
 
 __all__ = (Channel, ImageResampleMode, Pixoo, TextScrollDirection)
