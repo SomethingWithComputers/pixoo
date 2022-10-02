@@ -7,6 +7,30 @@ here: https://github.com/SomethingWithComputers/pixoo-banano
 
 Tested on a Pixoo 64, with Python 3.10 on MacOS Monterey.
 
+## The all new ✨Simulator✨
+
+.. Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
+I've included a simple "simulator" that can render the buffer to a GUI so it's easier to debug without having to connect
+to the device.
+
+It's in a very early stage, but it supports all methods that start with `draw_` and can be "pushed" to the GUI, just
+the way you'd use it normally.
+
+**NOTE:** When enabling and using the simulator, the actual connection to the device will be completely ignored. So
+don't expect to see anything on your device when simulating.
+
+The simulator can be activated as such:
+
+```python
+pixoo = Pixoo('192.168.1.137', simulated=True, simulation_config=SimulatorConfig(4))
+```
+
+The SimulatorConfig *currently* only takes one argument, which is the `scale` to display the images at. Should be 1 or a
+multiple of 2 if you want nice looking results. It seems like 4 and 8 are working great, in my experience. With `scale`
+set to 4 it'll look like this on MacOS:
+
+![Simulator buffer simulator](./images/screenshot-1.png)
+
 ## Installation
 
 Simply install the required dependencies via PIP. Navigate to the directory where you installed this library. Then
@@ -50,30 +74,6 @@ make the application much more stable at the expensive of a slight delay in upda
 I haven't tested it myself just yet, but theoretically this would solve
 the `"After updating the screen +/- 300 times the
 display stops responding"` bug.
-
-## The all new ✨Simulator✨
-
-.. Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
-I've included a simple "simulator" that can render the buffer to a GUI so it's easier to debug without having to connect
-to the device.
-
-It's in a very early stage, but it supports all methods that start with `draw_` and can be "pushed" to the GUI, just
-the way you'd use it normally.
-
-**NOTE:** When enabling and using the simulator, the actual connection to the device will be completely ignored. So
-don't expect to see anything on your device when simulating.
-
-The simulator can be activated as such:
-
-```python
-pixoo = Pixoo('192.168.1.137', simulated=True, simulation_config=SimulatorConfig(4))
-```
-
-The SimulatorConfig *currently* only takes one argument, which is the `scale` to display the images at. Should be 1 or a
-multiple of 2 if you want nice looking results. It seems like 4 and 8 are working great, in my experience. With `scale`
-set to 4 it'll look like this on MacOS:
-
-![Simulator buffer simulator](./images/screenshot-1.png)
 
 ## Special thanks
 
