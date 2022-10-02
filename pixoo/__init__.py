@@ -332,6 +332,25 @@ class Pixoo:
     def set_face(self, face_id):
         self.set_clock(face_id)
 
+    def set_screen(self, on=True):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Channel/OnOffScreen',
+            'OnOff': 1 if on else 0
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_screen_off(self):
+        self.set_screen(False)
+
+    def set_screen_on(self):
+        self.set_screen(True)
+
     def set_visualizer(self, equalizer_position):
         # This won't be possible
         if self.simulated:

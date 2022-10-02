@@ -101,6 +101,15 @@ The clock id is a number that corresponds to the installed clocks on your device
 pixoo.set_clock(0)
 
 '''
+Turn the screen on/off
+
+The screen still renders internally when off, but nothing will be shown on the display
+'''
+pixoo.set_screen_off()
+pixoo.set_screen_on()
+pixoo.set_screen(False)
+
+'''
 After setting the channel to VISUALIZER you can select a audio visualizer like this
 
 The visualizer id is a number that corresponds to the installed visualizers on your device
