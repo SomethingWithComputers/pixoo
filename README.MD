@@ -39,12 +39,25 @@ neat project. I'll be adding examples to this page over time as well, once the p
 **NOTE:** Be sure to call `push()` after performing all your draw actions, to push the internal buffer to the screen. *
 Try to not call this method more than once per second if you don't want the device to stop responding!*
 
+### Usage
+
+#### Stability increase
+
+Use the `refresh_connection_automatically` boolean variable in the constructor of `Pixoo` to force a reset of the
+internal
+counter on the device. This should
+make the application much more stable at the expensive of a slight delay in updating every 32 frames.
+I haven't tested it myself just yet, but theoretically this would solve
+the `"After updating the screen +/- 300 times the
+display stops responding"` bug.
+
 ## The all new ✨Simulator✨
 
-.. Simulator might be a bit of a big word, but if you want to test your own drawing stuff, I've included a simple "
-simulator" that can render the buffer to a GUI so it's easier to debug without having to connect to the device.
+.. Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
+I've included a simple "simulator" that can render the buffer to a GUI so it's easier to debug without having to connect
+to the device.
 
-It's in a very early stage, but it supports all methods that start with `draw_` and of can be "pushed" to the GUI, just
+It's in a very early stage, but it supports all methods that start with `draw_` and can be "pushed" to the GUI, just
 the way you'd use it normally.
 
 **NOTE:** When enabling and using the simulator, the actual connection to the device will be completely ignored. So
