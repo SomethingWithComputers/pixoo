@@ -315,7 +315,7 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-
+        
     def set_clock(self, clock_id):
         # This won't be possible
         if self.simulated:
@@ -324,6 +324,19 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetClockSelectId',
             'ClockId': clock_id
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_custom_channel(self, index):
+        self.set_custom_page(index)
+        self.set_channel(3)
+
+    def set_custom_page(self, index):
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Channel/SetCustomPageIndex',
+            'CustomPageIndex': index
         }))
         data = response.json()
         if data['error_code'] != 0:
