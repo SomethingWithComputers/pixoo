@@ -1,4 +1,5 @@
 import base64
+import ipaddress
 import json
 from enum import IntEnum
 
@@ -21,6 +22,22 @@ def clamp(value, minimum=0, maximum=255):
 
 def clamp_color(rgb):
     return clamp(rgb[0]), clamp(rgb[1]), clamp(rgb[2])
+
+
+def find_device():
+    response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
+    data = response.json()
+    if data['ReturnCode'] != 0:
+        print("ERROR: Could not execute request!")
+        return
+    print("Detected Devices")
+    for device in data['DeviceList']:
+        print("----------------")
+        print("Device Name: " + device["DeviceName"])
+        print("Device Id: " + device["DeviceId"])
+        print("Device Private IP: " + device["DevicePrivateIP"])
+        print("Device Mac: " + device["DeviceMac"])
+    return
 
 
 def lerp(start, end, interpolant):
@@ -82,8 +99,24 @@ class Pixoo:
         # Total number of pixels
         self.pixel_count = self.size * self.size
 
-        # Generate URL
-        self.__url = 'http://{0}/post'.format(address)
+        # set ip address
+        try:
+            # check if address is ip address
+            ipaddress.IPv4Network(address)
+            self.__url = 'http://{0}/post'.format(address)
+        except ValueError:
+            # try to get ip from id
+            _ip = self.__get_ip_from_id(address)
+            if _ip is not None:
+                self.__url = 'http://{0}/post'.format(_ip)
+            else:
+                # try to get ip from mac
+                _ip = self.__get_ip_from_mac(address)
+                if _ip is not None:
+                    self.__url = 'http://{0}/post'.format(_ip)
+                else:
+                    # Fallback -> use address
+                    self.__url = 'http://{0}/post'.format(address)
 
         # Prefill the buffer
         self.fill()
@@ -315,7 +348,7 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-        
+
     def set_clock(self, clock_id):
         # This won't be possible
         if self.simulated:
@@ -378,6 +411,30 @@ class Pixoo:
 
     def __clamp_location(self, xy):
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
+
+    def __get_ip_from_id(self, device_id):
+        response = requests.post("https://app.divoom-gz.com", json.dumps({
+            'Command': '/Device/ReturnSameLANDevice',
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+        for device in data['DeviceList']:
+            if device['DeviceId'] == device_id:
+                return device['DevicePrivateIP']
+        return None
+
+    def __get_ip_from_mac(self, mac):
+        response = requests.post("https://app.divoom-gz.com", json.dumps({
+            'Command': '/Device/ReturnSameLANDevice',
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+        for device in data['DeviceList']:
+            if device['DeviceMac'] == mac:
+                return device['DevicePrivateIP']
+        return None
 
     def __error(self, error):
         if self.debug:
