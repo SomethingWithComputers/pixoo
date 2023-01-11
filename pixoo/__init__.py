@@ -34,7 +34,7 @@ def find_device():
     for device in data['DeviceList']:
         print("----------------")
         print("Device Name: " + device["DeviceName"])
-        print("Device Id: " + device["DeviceId"])
+        print("Device Id: " + str(device["DeviceId"]))
         print("Device Private IP: " + device["DevicePrivateIP"])
         print("Device Mac: " + device["DeviceMac"])
     return
@@ -417,7 +417,7 @@ class Pixoo:
             'Command': '/Device/ReturnSameLANDevice',
         }))
         data = response.json()
-        if data['error_code'] != 0:
+        if data['ReturnCode'] != 0:
             self.__error(data)
         for device in data['DeviceList']:
             if device['DeviceId'] == device_id:
@@ -429,7 +429,7 @@ class Pixoo:
             'Command': '/Device/ReturnSameLANDevice',
         }))
         data = response.json()
-        if data['error_code'] != 0:
+        if data['ReturnCode'] != 0:
             self.__error(data)
         for device in data['DeviceList']:
             if device['DeviceMac'] == mac:
