@@ -413,21 +413,17 @@ class Pixoo:
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
 
     def __get_ip_from_id(self, device_id):
-        response = requests.post("https://app.divoom-gz.com", json.dumps({
-            'Command': '/Device/ReturnSameLANDevice',
-        }))
+        response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
         data = response.json()
         if data['ReturnCode'] != 0:
             self.__error(data)
         for device in data['DeviceList']:
-            if device['DeviceId'] == device_id:
+            if str(device['DeviceId']) == str(device_id):
                 return device['DevicePrivateIP']
         return None
 
     def __get_ip_from_mac(self, mac):
-        response = requests.post("https://app.divoom-gz.com", json.dumps({
-            'Command': '/Device/ReturnSameLANDevice',
-        }))
+        response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
         data = response.json()
         if data['ReturnCode'] != 0:
             self.__error(data)
