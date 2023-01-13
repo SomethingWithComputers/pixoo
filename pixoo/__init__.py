@@ -84,14 +84,14 @@ class Pixoo:
     __refresh_counter_limit = 32
     __simulator = None
 
-    def __init__(self, address, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
+    def __init__(self, connection_string, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
                  simulation_config=SimulatorConfig()):
         assert size in [16, 32, 64], \
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
         self.refresh_connection_automatically = refresh_connection_automatically
-        self.address = address
+        self.connection_string = connection_string
         self.debug = debug
         self.size = size
         self.simulated = simulated
@@ -100,23 +100,10 @@ class Pixoo:
         self.pixel_count = self.size * self.size
 
         # set ip address
-        try:
-            # check if address is ip address
-            ipaddress.IPv4Network(address)
-            self.__url = 'http://{0}/post'.format(address)
-        except ValueError:
-            # try to get ip from id
-            _ip = self.__get_ip_from_id(address)
-            if _ip is not None:
-                self.__url = 'http://{0}/post'.format(_ip)
-            else:
-                # try to get ip from mac
-                _ip = self.__get_ip_from_mac(address)
-                if _ip is not None:
-                    self.__url = 'http://{0}/post'.format(_ip)
-                else:
-                    # Fallback -> use address
-                    self.__url = 'http://{0}/post'.format(address)
+        self.__url = self.__get_url_from_connection_string(connection_string)
+        if self.__url is None:
+            # fallback
+            self.__url = 'http://{0}/post'.format(connection_string)
 
         # Prefill the buffer
         self.fill()
@@ -411,6 +398,26 @@ class Pixoo:
 
     def __clamp_location(self, xy):
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
+
+    def __get_url_from_connection_string(self, connection_string):
+        try:
+            # check if address is ip address
+            ipaddress.IPv4Network(connection_string)
+            url = 'http://{0}/post'.format(connection_string)
+        except ValueError:
+            # try to get ip from id
+            ip = self.__get_ip_from_id(connection_string)
+            if ip is not None:
+                url = 'http://{0}/post'.format(ip)
+            else:
+                # try to get ip from mac
+                ip = self.__get_ip_from_mac(connection_string)
+                if ip is not None:
+                    url = 'http://{0}/post'.format(ip)
+                else:
+                    # IP not found / valid
+                    url = None
+        return url
 
     def __get_ip_from_id(self, device_id):
         response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
