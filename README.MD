@@ -49,6 +49,19 @@ library. I use brew:
 brew install python-tk
 ```
 
+There might be some issues on MacOS (Macbook M1 Max at least) showing the simulator screen black. In case you face such issue, you might try the following workaround tested working (on Macbook with M1 Max). Originally this was reported in [Stack Overflow](https://stackoverflow.com/questions/73056296/tkinter-on-mac-shows-up-as-a-black-screen):
+
+> Run the following commands
+> 1. brew uninstall tcl-tk uninstall the old tk if you have it
+> 2. pyenv uninstall 3.10.5 ...or whatever your current global Python version is
+> 3.brew install tcl-tk grab a fresh install of tk
+> 4. pyenv install 3.10.5 grab a fresh install of Python 3.10.5 (or whichever)
+> 5. pyenv global 3.10.5 set your global Python version (matching the version you just installed above)
+> 
+> You need to install tk via homebrew before installing Python with pyenv because pyenv will automatically try to use whatever tk package it can find when it installs Python.
+> 
+> This will also work if you are using pyenv to upgrade from one version of Python to another.
+
 ## Getting started
 
 Create an interface with your device as such (of course use your own local IP-address):
