@@ -59,6 +59,14 @@ brew install python-tk
 
 Create an interface with your device as such (of course use your own local IP-address):
 
+If you don't know your device IP and you have just one Pixoo device in your network, you can skip the address
+argument and Pixoo will automatically identify the device in your network and use that address for the connection.
+
+```python
+pixoo = Pixoo()
+```
+
+If you know your Pixoo device IP or you have more than one device in your network, you can enter teh device local address.
 ```python
 pixoo = Pixoo('192.168.1.137')
 ```
