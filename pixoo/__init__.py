@@ -53,7 +53,7 @@ class Channel(IntEnum):
 
 class ImageResampleMode(IntEnum):
     PIXEL_ART = Image.NEAREST
-    #SMOOTH = Image.ANTIALIAS
+    SMOOTH = Image.ANTIALIAS
 
 
 class TextScrollDirection(IntEnum):
@@ -109,11 +109,11 @@ class Pixoo:
     def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE):
         matrix = retrieve_glyph(character)
         if matrix is not None:
-            teiler = matrix[-1]
+            divider = matrix[-1]
             for index, bit in enumerate(matrix):
                 if bit == 1:
-                    local_x = index % teiler
-                    local_y = int(index / teiler)
+                    local_x = index % divider
+                    local_y = int(index / divider)
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255,
@@ -250,11 +250,11 @@ class Pixoo:
     def draw_character2(self, character, xy=(0, 0), rgb=Palette.WHITE):
         matrix = retrieve_glyph2(character)
         if matrix is not None:
-            teiler = matrix[-1]
+            divider = matrix[-1]
             for index, bit in enumerate(matrix):
                 if bit == 1:
-                    local_x = index % teiler
-                    local_y = int(index / teiler)
+                    local_x = index % divider
+                    local_y = int(index / divider)
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_text2(self, text, xy=(0, 0), rgb=Palette.WHITE):
@@ -450,7 +450,6 @@ class Pixoo:
             'PicSpeed': 1000,
             'PicData': str(base64.b64encode(bytearray(self.__buffer)).decode())
         }))
-        #print(str(base64.b64encode(bytearray(self.__buffer)).decode()))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
