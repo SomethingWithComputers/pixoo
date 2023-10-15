@@ -52,7 +52,7 @@ class Channel(IntEnum):
 
 class ImageResampleMode(IntEnum):
     PIXEL_ART = Image.NEAREST
-    SMOOTH = Image.ANTIALIAS
+    SMOOTH = Image.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
