@@ -1,4 +1,5 @@
 import base64
+import ipaddress
 import json
 from enum import IntEnum
 
@@ -21,6 +22,22 @@ def clamp(value, minimum=0, maximum=255):
 
 def clamp_color(rgb):
     return clamp(rgb[0]), clamp(rgb[1]), clamp(rgb[2])
+
+
+def find_device():
+    response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
+    data = response.json()
+    if data['ReturnCode'] != 0:
+        print("ERROR: Could not execute request!")
+        return
+    print("Detected Devices")
+    for device in data['DeviceList']:
+        print("----------------")
+        print("Device Name: " + device["DeviceName"])
+        print("Device Id: " + str(device["DeviceId"]))
+        print("Device Private IP: " + device["DevicePrivateIP"])
+        print("Device Mac: " + device["DeviceMac"])
+    return
 
 
 def lerp(start, end, interpolant):
@@ -67,14 +84,14 @@ class Pixoo:
     __refresh_counter_limit = 32
     __simulator = None
 
-    def __init__(self, address, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
+    def __init__(self, connection_string, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
                  simulation_config=SimulatorConfig()):
         assert size in [16, 32, 64], \
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
         self.refresh_connection_automatically = refresh_connection_automatically
-        self.address = address
+        self.connection_string = connection_string
         self.debug = debug
         self.size = size
         self.simulated = simulated
@@ -82,8 +99,11 @@ class Pixoo:
         # Total number of pixels
         self.pixel_count = self.size * self.size
 
-        # Generate URL
-        self.__url = 'http://{0}/post'.format(address)
+        # set ip address
+        self.__url = self.__get_url_from_connection_string(connection_string)
+        if self.__url is None:
+            # fallback
+            self.__url = 'http://{0}/post'.format(connection_string)
 
         # Prefill the buffer
         self.fill()
@@ -326,7 +346,7 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-        
+
     def set_clock(self, clock_id):
         # This won't be possible
         if self.simulated:
@@ -389,6 +409,46 @@ class Pixoo:
 
     def __clamp_location(self, xy):
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
+
+    def __get_url_from_connection_string(self, connection_string):
+        try:
+            # check if address is ip address
+            ipaddress.IPv4Network(connection_string)
+            url = 'http://{0}/post'.format(connection_string)
+        except ValueError:
+            # try to get ip from id
+            ip = self.__get_ip_from_id(connection_string)
+            if ip is not None:
+                url = 'http://{0}/post'.format(ip)
+            else:
+                # try to get ip from mac
+                ip = self.__get_ip_from_mac(connection_string)
+                if ip is not None:
+                    url = 'http://{0}/post'.format(ip)
+                else:
+                    # IP not found / valid
+                    url = None
+        return url
+
+    def __get_ip_from_id(self, device_id):
+        response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
+        data = response.json()
+        if data['ReturnCode'] != 0:
+            self.__error(data)
+        for device in data['DeviceList']:
+            if str(device['DeviceId']) == str(device_id):
+                return device['DevicePrivateIP']
+        return None
+
+    def __get_ip_from_mac(self, mac):
+        response = requests.post("https://app.divoom-gz.com/Device/ReturnSameLANDevice")
+        data = response.json()
+        if data['ReturnCode'] != 0:
+            self.__error(data)
+        for device in data['DeviceList']:
+            if device['DeviceMac'] == mac:
+                return device['DevicePrivateIP']
+        return None
 
     def __error(self, error):
         if self.debug:
