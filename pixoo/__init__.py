@@ -1,12 +1,13 @@
 import base64
 import json
 from enum import IntEnum
+from math import floor
 
 import requests
 from PIL import Image, ImageOps
 
 from ._colors import Palette
-from ._font import retrieve_glyph
+from ._font import retrieve_glyph, CHAR_SIZE
 from .simulator import Simulator, SimulatorConfig
 
 
@@ -242,9 +243,35 @@ class Pixoo:
     def draw_pixel_at_location_rgb(self, x, y, r, g, b):
         self.draw_pixel((x, y), (r, g, b))
 
-    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE):
+    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, paddings=(2, 2), shadow=None, shadow_rgb=Palette.BLACK):
+        '''
+        Writes a given text using the provided PICO-8 font on the screen buffer.
+
+        Parameters:
+        - text (str): The text to write.
+        - xy (tuple(int | str, int | str) , str): The coordinates to start writing the text at. Can be a tuple of
+        x, y coordinates, or a value for each coordinate. In the case of the x coordinate allowed values are 'center',
+        'left', and 'right'. In the case of the y coordinate allowed values are 'center', 'top', and 'bottom'.
+        It can also be a single str with the value 'center' to center the text horizontally and vertically.
+        - rgb (tuple(int, int, int)): The color to write the text in.
+        - paddings (tuple(int, int)): The amount of pixels to pad the text with if the text value is a string alignment value.
+        - shadow (str, None): The type of shadow to add to the text. Values are 'horizontal', 'vertical', 'diagonal', or None.
+        - shadow_rgb (tuple(int, int, int)): The color of the shadow.
+
+        Returns:
+        - None
+        '''
+        xy = self.__compute_text_coords(text, xy, paddings)
         for index, character in enumerate(text):
-            self.draw_character(character, (index * 4 + xy[0], xy[1]), rgb)
+            x, y = index * CHAR_SIZE[0] + xy[0], xy[1]
+            if shadow is not None:
+                if shadow == 'horizontal':
+                    self.draw_character(character, (x + 1, y), shadow_rgb)
+                elif shadow == 'vertical':
+                    self.draw_character(character, (x, y + 1), shadow_rgb)
+                elif shadow == 'diagonal':
+                    self.draw_character(character, (x + 1, y + 1), shadow_rgb)
+            self.draw_character(character, (x, y), rgb)
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b):
         self.draw_text(text, (x, y), (r, g, b))
@@ -386,9 +413,36 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-
-    def __clamp_location(self, xy):
-        return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
+    
+    def __compute_x_text_position(self, text_len, position, text_size, padding):
+        if isinstance(position, int):
+            return position
+        res = padding
+        if text_len >= self.size:
+            return res
+        if position == 'center':
+            res = floor((self.size - text_len * text_size) / 2)
+        elif position == 'right':
+            res = self.size - text_len * text_size - padding
+        return res
+    
+    def __compute_y_text_position(self, position, text_size, padding):
+        if isinstance(position, int):
+            return position
+        res = padding
+        if position == 'center':
+            res = floor((self.size - text_size) / 2)
+        elif position == 'bottom':
+            res = self.size - text_size - padding
+        return res
+    
+    def __compute_text_coords(self, text, xy, paddings):
+        if isinstance(xy, str) and xy == 'center':
+            xy = ('center', 'center')
+        return (
+            self.__compute_x_text_position(len(text), xy[0], CHAR_SIZE[0], paddings[0]),
+            self.__compute_y_text_position(xy[1], CHAR_SIZE[1], paddings[1])
+        )
 
     def __error(self, error):
         if self.debug:
