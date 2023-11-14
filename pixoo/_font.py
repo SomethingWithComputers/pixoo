@@ -44,6 +44,7 @@ FONT_PICO_8 = {'0': [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1], '1': [1, 1, 0
                '@': [0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1], '%': [1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1]
                }
 
+CHAR_SIZE = (4, 5)
 
 def retrieve_glyph(character):
     if character in FONT_PICO_8:
@@ -56,4 +57,4 @@ def supported_characters():
     return FONT_PICO_8.keys()
 
 
-__all__ = (retrieve_glyph, supported_characters, FONT_PICO_8)
+__all__ = (retrieve_glyph, supported_characters, FONT_PICO_8, CHAR_SIZE)
