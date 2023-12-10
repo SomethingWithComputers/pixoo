@@ -1,13 +1,14 @@
 import base64
-import json
 from enum import IntEnum
 
-import requests
 from PIL import Image, ImageOps
 
 from ._colors import Palette
 from ._font import retrieve_glyph
 from .simulator import Simulator, SimulatorConfig
+from pixoo.find_device import get_pixoo_devices as _get_pixoo_devices
+import pixoo.exceptions as _exceptions
+from pixoo.api import PixooBaseApi
 
 
 def clamp(value, minimum=0, maximum=255):
@@ -60,21 +61,25 @@ class TextScrollDirection(IntEnum):
     RIGHT = 1
 
 
-class Pixoo:
+class Pixoo(PixooBaseApi):
     __buffer = []
     __buffers_send = 0
     __counter = 0
     __refresh_counter_limit = 32
     __simulator = None
 
-    def __init__(self, address, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
+    def __init__(self, address=None, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
                  simulation_config=SimulatorConfig()):
         assert size in [16, 32, 64], \
             'Invalid screen size in pixels given. ' \
             'Valid options are 16, 32, and 64'
 
         self.refresh_connection_automatically = refresh_connection_automatically
-        self.address = address
+        if address is None:
+            self.__address = self.__get_first_pixoo_device_address()
+        else:
+            self.__address = address
+        super().__init__(self.__address)
         self.debug = debug
         self.size = size
         self.simulated = simulated
@@ -83,7 +88,7 @@ class Pixoo:
         self.pixel_count = self.size * self.size
 
         # Generate URL
-        self.__url = 'http://{0}/post'.format(address)
+        self.__url = 'http://{0}/post'.format(self.address)
 
         # Prefill the buffer
         self.fill()
@@ -98,6 +103,17 @@ class Pixoo:
         # We're going to need a simulator
         if self.simulated:
             self.__simulator = Simulator(self, simulation_config)
+
+    @staticmethod
+    def __get_first_pixoo_device_address():
+        pixoo_devices = _get_pixoo_devices()
+        if len(pixoo_devices) > 1:
+            raise _exceptions.MoreThanOnePixooFound(f"PixoDevices: {pixoo_devices}")
+        pixoo_device = pixoo_devices[0]  # Just take first (and unique) item
+        dev_name = pixoo_device["DeviceName"]
+        dev_ip = pixoo_device["DevicePrivateIP"]
+        print(f" Pixo Device auto identified!!! DeviceName: {dev_name} (IP: {dev_ip})")
+        return dev_ip
 
     def clear(self, rgb=Palette.BLACK):
         self.fill(rgb)
@@ -282,23 +298,19 @@ class Pixoo:
 
         # Make sure the identifier is valid
         identifier = clamp(identifier, 0, 19)
-
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Draw/SendHttpText',
-            'TextId': identifier,
-            'x': xy[0],
-            'y': xy[1],
-            'dir': direction,
-            'font': font,
-            'TextWidth': width,
-            'speed': movement_speed,
-            'TextString': text,
-            'color': rgb_to_hex_color(color)
-        }))
-
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+        self.send_command(
+            command="Draw/SendText",
+            text_id=identifier,
+            x=xy[0],
+            y=xy[1],
+            dir=direction,
+            font=font,
+            text_width=width,
+            speed=movement_speed,
+            text_string=text,
+            color=rgb_to_hex_color(color),
+            align=1,  # Align text was not previously defined, so assuming 1
+        )
 
     def set_brightness(self, brightness):
         # This won't be possible
@@ -306,52 +318,40 @@ class Pixoo:
             return
 
         brightness = clamp(brightness, 0, 100)
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/SetBrightness',
-            'Brightness': brightness
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+        self.send_command(
+            command="Channel/SetBrightness",
+            brightness=brightness,
+        )
 
     def set_channel(self, channel):
         # This won't be possible
         if self.simulated:
             return
 
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/SetIndex',
-            'SelectIndex': int(channel)
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
-        
+        self.send_command(
+            command="Channel/SetIndex",
+            select_index=channel,
+        )
+
     def set_clock(self, clock_id):
         # This won't be possible
         if self.simulated:
             return
 
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/SetClockSelectId',
-            'ClockId': clock_id
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+        self.send_command(
+            command="Channel/SetClockSelectId",
+            clock_id=clock_id,
+        )
 
     def set_custom_channel(self, index):
         self.set_custom_page(index)
         self.set_channel(3)
 
     def set_custom_page(self, index):
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/SetCustomPageIndex',
-            'CustomPageIndex': index
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+        self.send_command(
+            command="Channel/SetCustomPageIndex",
+            custom_page_index=index,
+        )
 
     def set_face(self, face_id):
         self.set_clock(face_id)
@@ -361,13 +361,10 @@ class Pixoo:
         if self.simulated:
             return
 
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/OnOffScreen',
-            'OnOff': 1 if on else 0
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+        self.send_command(
+            command="Channel/OnOffScreen",
+            on_off=1 if on else 0,
+        )
 
     def set_screen_off(self):
         self.set_screen(False)
@@ -379,13 +376,11 @@ class Pixoo:
         # This won't be possible
         if self.simulated:
             return
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/SetEqPosition',
-            'EqPosition': equalizer_position
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+
+        self.send_command(
+            command="Channel/SetEqPosition",
+            eq_position=equalizer_position,
+        )
 
     def __clamp_location(self, xy):
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
@@ -401,14 +396,10 @@ class Pixoo:
             self.__counter = 1
             return
 
-        response = requests.post(self.__url, '{"Command": "Draw/GetHttpGifId"}')
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
-        else:
-            self.__counter = int(data['PicId'])
-            if self.debug:
-                print('[.] Counter loaded and stored: ' + str(self.__counter))
+        data = self.send_command(command="Draw/GetHttpGifId")
+        self.__counter = int(data['PicId'])
+        if self.debug:
+            print('[.] Counter loaded and stored: ' + str(self.__counter))
 
     def __send_buffer(self):
 
@@ -432,38 +423,46 @@ class Pixoo:
             return
 
         # Encode the buffer to base64 encoding
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Draw/SendHttpGif',
-            'PicNum': 1,
-            'PicWidth': self.size,
-            'PicOffset': 0,
-            'PicID': self.__counter,
-            'PicSpeed': 1000,
-            'PicData': str(base64.b64encode(bytearray(self.__buffer)).decode())
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
-        else:
-            self.__buffers_send = self.__buffers_send + 1
+        self.send_command(
+            command="Draw/SendHttpGif",
+            pic_num=1,
+            pic_width=self.size,
+            pic_offset=0,
+            pic_id=self.__counter,
+            pic_speed=1000,
+            pic_data=str(base64.b64encode(bytearray(self.__buffer)).decode()),
+        )
+        self.__buffers_send = self.__buffers_send + 1
 
-            if self.debug:
-                print(f'[.] Pushed {self.__buffers_send} buffers')
+        if self.debug:
+            print(f'[.] Pushed {self.__buffers_send} buffers')
 
     def __reset_counter(self):
         if self.debug:
-            print(f'[.] Resetting counter remotely')
+            print('[.] Resetting counter remotely')
 
         # This won't be possible
         if self.simulated:
             return
 
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Draw/ResetHttpGifId'
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
+        self.send_command(
+            command="Draw/ResetHttpGifId",
+        )
+
+    @property
+    def url(self):
+        """ Get device URL """
+        return self.__url
+
+    @property
+    def address(self):
+        """ Get device address """
+        return self.__address
+
+    @property
+    def buffer(self):
+        """ Get buffer of device """
+        return self.__buffer
 
 
 __all__ = (Channel, ImageResampleMode, Pixoo, TextScrollDirection)
