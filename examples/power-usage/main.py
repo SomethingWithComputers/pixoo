@@ -3,6 +3,7 @@ import time
 
 import requests
 from dotenv import load_dotenv
+
 from pixoo import Pixoo
 
 # Load .env variables
@@ -14,7 +15,7 @@ def defined_value(value, default):
 
 
 def retrieve_current_kwh_usage():
-    response = requests.get('http://192.168.50.45/api/v1/data')
+    response = requests.get(f'http://{os.environ.get('P1_IP_ADDRESS')}/api/v1/data')
     data = response.json()
 
     return data['active_power_w']
@@ -43,13 +44,12 @@ def main():
         print('[.] Starting in connected mode')
 
     # Draw a blank screen for now
-    pixoo = Pixoo(ip_address, simulated=True)
-    # pixoo.draw_image('background.png')
-    # pixoo.set_brightness(brightness)  # Only used sometimes if the screen isn't bright enough
-    # pixoo.draw_text('kWh', (8, 40), white)
-    # pixoo.draw_text('-', (53, 40), white)
-    # pixoo.push()
-    # print(pixoo.get_device_time())
+    pixoo = Pixoo(ip_address)
+    pixoo.draw_image('background.png')
+    pixoo.set_brightness(brightness)  # Only used sometimes if the screen isn't bright enough
+    pixoo.draw_text('kWh', (8, 40), white)
+    pixoo.draw_text('-', (53, 40), white)
+    pixoo.push()
 
     print('[.] Starting update loop in 2 seconds')
     time.sleep(2)
@@ -93,5 +93,3 @@ def main():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

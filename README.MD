@@ -5,9 +5,19 @@ A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon mor
 A simple working example application using this "rendering" framework can be found
 here: https://github.com/SomethingWithComputers/pixoo-banano
 
-Tested on a Pixoo 64, with Python 3.10 on MacOS Monterey.
+An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
+In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
+graph.
 
-## The all new ✨Simulator✨
+![Simulator buffer simulator](./images/screenshot-2.png)
+
+_Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
+
+## The all new ✨REST-interface✨
+
+.. Coming soon (tm)
+
+## The Simulator
 
 .. Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
 I've included a simple "simulator" that can render the buffer to a GUI so it's easier to debug without having to connect
