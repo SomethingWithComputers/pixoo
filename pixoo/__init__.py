@@ -51,8 +51,8 @@ class Channel(IntEnum):
 
 
 class ImageResampleMode(IntEnum):
-    PIXEL_ART = Image.NEAREST
-    SMOOTH = Image.LANCZOS
+    PIXEL_ART = Image.Resampling.NEAREST
+    SMOOTH = Image.Resampling.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
@@ -87,6 +87,10 @@ class Pixoo:
 
         # Prefill the buffer
         self.fill()
+
+        if not self.validate_connection():
+            print("[x] No connection could be made. Verify all settings")
+            return
 
         # Retrieve the counter
         self.__load_counter()
@@ -258,18 +262,132 @@ class Pixoo:
     def fill_rgb(self, r, g, b):
         self.fill((r, g, b))
 
-    def get_settings(self):
+    def find_local_device_ip(self):
+        if self.simulated:
+            return None
+
+        response = requests.post('https://app.divoom-gz.com/Device/ReturnSameLANDevice')
+        data = response.json()
+        if data['ReturnCode'] != 0:
+            self.__error(data)
+
+        if len(data['DeviceList']) >= 1:
+            if len(data['DeviceList']) > 1:
+                print(
+                    f'[!] Multiple devices found on local LAN, connecting to the first one (override this by '
+                    f'providing a device_name in the constructor): {0})'.format(
+                        data['DeviceList'][0]['DeviceName']))
+
+            return data['DeviceList'][0]['DevicePrivateIP']
+
+        print('[x] No devices found on local LAN')
+        return None
+
+    def get_all_device_configurations(self):
+        # This won't be possible
+        if self.simulated:
+            return None
+
         response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/GetAllConf'
+            'Command': 'Channel/GetAllConf',
         }))
+
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-        else:
-            return {key: val for key, val in data.items() if key != 'error_code'}
+
+        return data
+
+    def get_device_time(self):
+        # This won't be possible
+        if self.simulated:
+            return None
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/GetDeviceTime',
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+            return None
+
+        print(data)
+        return data
+
+
+    def play_local_gif(self, file_path):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/PlayTFGif',
+            'FileType': 0,
+            'FileName': file_path
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def play_local_gif_directory(self, path):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/PlayTFGif',
+            'FileType': 1,
+            'FileName': path
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def play_net_gif(self, gif_file_url):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/PlayTFGif',
+            'FileType': 2,
+            'FileName': gif_file_url
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def sound_buzzer(self, active_cycle_time=500, inactive_cycle_time=500, total_time=3000):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/PlayBuzzer',
+            'ActiveTimeInCycle': active_cycle_time,
+            'OffTimeInCycle': inactive_cycle_time,
+            'PlayTotalTime': total_time,
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
 
     def push(self):
         self.__send_buffer()
+
+    def reboot(self):
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/SysReboot'
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
 
     def send_text(self, text, xy=(0, 0), color=Palette.WHITE, identifier=1,
                   font=2, width=64,
@@ -356,6 +474,60 @@ class Pixoo:
     def set_face(self, face_id):
         self.set_clock(face_id)
 
+    def set_high_light_mode(self, on=True):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/SetHighLightMode',
+            'Mode': on
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_mirror_mode(self, on=False):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/SetMirrorMode',
+            'Mode': on
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_noise_status(self, on=True):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Tools/SetNoiseStatus',
+            'NoiseStatus': on
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_score_board(self, red_score, blue_score):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Tools/SetScoreBoard',
+            'BlueScore': clamp(blue_score, 0, 999),
+            'RedScore': clamp(red_score, 0, 999)
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
     def set_screen(self, on=True):
         # This won't be possible
         if self.simulated:
@@ -379,6 +551,7 @@ class Pixoo:
         # This won't be possible
         if self.simulated:
             return
+
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetEqPosition',
             'EqPosition': equalizer_position
@@ -386,6 +559,41 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
+
+    def set_white_balance(self, white_balance):
+        # This won't be possible
+        if self.simulated:
+            return
+
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Device/SetWhiteBalance',
+            'RValue': clamp(white_balance[0], 0, 100),
+            'GValue': clamp(white_balance[1], 0, 100),
+            'BValue': clamp(white_balance[2], 0, 100)
+        }))
+
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_white_balance_rgb(self, white_balance_r, white_balance_g, white_balance_b):
+        self.set_white_balance((white_balance_r, white_balance_g, white_balance_b))
+
+    def validate_connection(self):
+        # This won't be possible
+        if self.simulated:
+            return True
+
+        try:
+            # This seems to be a nice low-ping method to test the connection with (in lieu of a ping)
+            self.get_all_device_configurations()
+        except requests.exceptions.ConnectionError:
+            if self.debug:
+                print('[x] Connection error')
+
+            return False
+
+        return True
 
     def __clamp_location(self, xy):
         return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)

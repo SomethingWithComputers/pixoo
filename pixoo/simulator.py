@@ -2,7 +2,7 @@ import tkinter
 
 from PIL import ImageTk, Image, ImageDraw
 
-from ._colors import Palette
+from pixoo import Palette
 
 
 class SimulatorConfig:
