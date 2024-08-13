@@ -33,7 +33,13 @@ set to 4 it'll look like this on MacOS:
 
 ## Installation
 
-Simply install the required dependencies via PIP. Navigate to the directory where you installed this library. Then
+You can install the pixoo package as developer locally with next command running from cloned folder:
+
+```shell
+python -m pip install -e .
+```
+
+Or Simply install the required dependencies via PIP. Navigate to the directory where you installed this library. Then
 execute:
 
 ```shell

@@ -52,7 +52,7 @@ class Channel(IntEnum):
 
 class ImageResampleMode(IntEnum):
     PIXEL_ART = Image.NEAREST
-    SMOOTH = Image.ANTIALIAS
+    SMOOTH = Image.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
@@ -156,13 +156,15 @@ class Pixoo:
                     f'[.] Resized image to fit on screen (saving aspect ratio): "{image_path_or_object}" ({width}, {height}) '
                     f'-> ({image.size[0]}, {image.size[1]})')
 
-        # Convert the loaded image to RGB
-        rgb_image = image.convert('RGB')
+        # Convert the loaded image to RGBA to also support transparency
+        rgb_image = image.convert('RGBA')
 
         # Iterate over all pixels in the image that are left and buffer them
         for y in range(image.size[1]):
             for x in range(image.size[0]):
                 location = (x, y)
+                if rgb_image.getpixel(location)[3] == 0:
+                    continue
                 placed_x = x + xy[0]
                 if self.size - 1 < placed_x or placed_x < 0:
                     continue
@@ -170,7 +172,6 @@ class Pixoo:
                 placed_y = y + xy[1]
                 if self.size - 1 < placed_y or placed_y < 0:
                     continue
-
                 self.draw_pixel((placed_x, placed_y),
                                 rgb_image.getpixel(location))
 
@@ -257,6 +258,16 @@ class Pixoo:
     def fill_rgb(self, r, g, b):
         self.fill((r, g, b))
 
+    def get_settings(self):
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Channel/GetAllConf'
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+        else:
+            return {key: val for key, val in data.items() if key != 'error_code'}
+
     def push(self):
         self.__send_buffer()
 
@@ -315,7 +326,7 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-
+        
     def set_clock(self, clock_id):
         # This won't be possible
         if self.simulated:
@@ -324,6 +335,19 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetClockSelectId',
             'ClockId': clock_id
+        }))
+        data = response.json()
+        if data['error_code'] != 0:
+            self.__error(data)
+
+    def set_custom_channel(self, index):
+        self.set_custom_page(index)
+        self.set_channel(3)
+
+    def set_custom_page(self, index):
+        response = requests.post(self.__url, json.dumps({
+            'Command': 'Channel/SetCustomPageIndex',
+            'CustomPageIndex': index
         }))
         data = response.json()
         if data['error_code'] != 0:
