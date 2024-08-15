@@ -17,7 +17,7 @@ _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
 It's pretty much fully functional now.
 You can find the example in `examples/pixoorest` on how to start a script that runs the REST server.
-Most of the methods available in the Pixoo library are support- except currently for loading a local image (for obvious
+Most of the methods available in the Pixoo library are supported- except currently for loading a local image (for obvious
 reasons).
 
 Basically, anywhere in the code you can start a (blocking!) server thread by making a `PixooREST` object as such:
@@ -26,7 +26,9 @@ Basically, anywhere in the code you can start a (blocking!) server thread by mak
 PixooREST()
 ```
 
-These are the currently supported REST calls
+Look into the `PixooConfiguration` and `RESTConfiguration` objects if you want to do some customizing. This will be documented more later on.
+
+These are the currently supported REST calls, and can be made with both POST and GET calls. A more REST-like interface is coming, but I wanted to make the interface as easily accessible as possible for now.
 
 | Pixoo equivalent          | URL and variables                                                                                                                |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------|
