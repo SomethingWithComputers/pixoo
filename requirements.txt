@@ -1,2 +1,4 @@
-requests ~= 2.31.0
-Pillow ~= 10.0.0
+Flask~=3.0.3
+requests~=2.32.3
+pillow~=10.4.0
+python-dotenv~=1.0.1

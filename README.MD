@@ -15,7 +15,49 @@ _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
 ## The all new ✨REST-interface✨
 
-.. Coming soon (tm)
+It's pretty much fully functional now.
+You can find the example in `examples/pixoorest` on how to start a script that runs the REST server.
+Most of the methods available in the Pixoo library are support- except currently for loading a local image (for obvious
+reasons).
+
+Basically, anywhere in the code you can start a (blocking!) server thread by making a `PixooREST` object as such:
+
+```python
+PixooREST()
+```
+
+These are the currently supported REST calls
+
+| Pixoo equivalent          | URL and variables                                                                                                                |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| clear                     | `/clear/<int:r>/<int:g>/<int:b>`                                                                                                 |
+| draw_character            | `/drawcharacter/<string:character>/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>`                                                      |
+| draw_filled_rectangle     | `/drawfilledrectangle/<int:top_left_x>/<int:top_left_y>/<int:bottom_right_x>/<int:bottom_right_y>/<int:r>/<int:g>/<int:b>`       |
+| draw_line                 | `/drawline/<int:start_x>/<int:start_y>/<int:stop_x>/<int:stop_y>/<int:r>/<int:g>/<int:b>`                                        |
+| draw_pixel_at_index       | `/drawpixel/<int:index>/<int:r>/<int:g>/<int:b>`                                                                                 |
+| draw_pixel_at_location    | `/drawpixel/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>`                                                                             |
+| draw_text_at_location     | `/drawtext/<string:text>/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>`                                                                |
+| device_configuration      | `/deviceconfigurations`                                                                                                          |
+| device_time               | `/devicetime`                                                                                                                    |
+| fill                      | `/fill/<int:r>/<int:g>/<int:b>`                                                                                                  |
+| play_local_gif            | `/playlocalgif/<path:file_path>`                                                                                                 |
+| play_local_gif_directory  | `/playlocalgifdirectory/<path:path>`                                                                                             |
+| play_gif_file_url         | `/playnetgif/<path:gif_file_url>`                                                                                                |
+| push                      | `/push`                                                                                                                          |
+| reboot                    | `/reboot`                                                                                                                        |
+| send_text_at_location_rgb | `/sendtext/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/<int:movement_speed>/<int:direction>` |
+| set_brightness            | `/setbrightness/<int:brightness>`                                                                                                |
+| set_channel               | `/setchannel/<int:channel>`                                                                                                      |
+| set_clock                 | `/setclock/<int:clock_id>`                                                                                                       |
+| set_face                  | `/setface/<int:face_id>`                                                                                                         |
+| set_high_light_mode       | `/sethighlight/<int:on>`                                                                                                         |
+| set_mirror_mode           | `/setmirror/<int:on>`                                                                                                            |
+| set_noise_status          | `/setnoise/<int:on>`                                                                                                             |
+| set_score_board           | `/setscoreboard/<int:blue_score>/<int:red_score>`                                                                                |
+| set_screen                | `/setscreen/<int:on>`                                                                                                            |
+| set_visualizer            | `/setvisualizer/<int:equalizer_position>`                                                                                        |
+| set_white_balance_rgb     | `/setwhitebalance/<int:white_balance_r>/<int:white_balance_g>/<int:white_balance_b>`                                             |
+| sound_buzzer              | `/soundbuzzer/<int:active_cycle_time>/<int:inactive_cycle_time>/<int:total_time>`                                                |
 
 ## The Simulator
 

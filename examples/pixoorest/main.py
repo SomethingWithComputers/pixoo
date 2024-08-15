@@ -1,4 +1,4 @@
-from pixoo.objects.pixoorest import PixooREST
+from pixoo import PixooREST
 
 
 def main():

@@ -3,10 +3,8 @@ import json
 
 import requests
 from PIL import Image, ImageOps
-from flask import Flask
 
-from pixoo.configurations.simulatorconfiguration import SimulatorConfiguration
-from pixoo.constants.colors import Palette
+from pixoo import SimulatorConfiguration, Palette
 from pixoo.constants.font import retrieve_glyph
 from pixoo.enums.imageresamplemode import ImageResampleMode
 from pixoo.enums.textscrolldirection import TextScrollDirection
@@ -32,10 +30,11 @@ class Pixoo:
 
         # Attempt to load the IP if it's not
         if ip_address is None:
-            ip_address = self.find_local_device_ip()
+            self.ip_address = self.find_local_device_ip()
+        else:
+            self.ip_address = ip_address
 
         self.debug = debug
-        self.ip_address = ip_address
         self.refresh_connection_automatically = refresh_connection_automatically
         self.size = size
 
@@ -43,7 +42,7 @@ class Pixoo:
         self.pixel_count = self.size * self.size
 
         # Generate URL
-        self.__url = 'http://{0}/post'.format(ip_address)
+        self.__url = 'http://{0}/post'.format(self.ip_address)
 
         # Prefill the buffer
         self.fill()

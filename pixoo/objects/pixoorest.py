@@ -10,14 +10,15 @@ class PixooREST:
     def __init__(self, pixoo_configuration=PixooConfiguration(), rest_configuration=RESTConfiguration()):
         self.pixoo = Pixoo(pixoo_configuration.ip_address)
 
-        self.rest = Flask(__name__)
+        self.rest = Flask(rest_configuration.name)
         self.rest.add_url_rule('/clear/<int:r>/<int:g>/<int:b>', 'clear', view_func=self.clear_rgb,
                                methods=['GET', 'POST'])
         self.rest.add_url_rule('/drawcharacter/<string:character>/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>',
                                'draw_character', view_func=self.draw_character_at_location_rgb,
                                methods=['GET', 'POST'])
         self.rest.add_url_rule(
-            '/drawfilledrectangle/<int:top_left_x>/<int:top_left_y>/<int:bottom_right_x>/<int:bottom_right_y>/<int:r>/<int:g>/<int:b>',
+            '/drawfilledrectangle/<int:top_left_x>/<int:top_left_y>/<int:bottom_right_x>/<int:bottom_right_y>/'
+            '<int:r>/<int:g>/<int:b>',
             'draw_filled_rectangle', view_func=self.draw_filled_rectangle_from_top_left_to_bottom_right_rgb,
             methods=['GET', 'POST'])
         # MARKTWAIN - Find a way to draw image, possibly with hex encoding?
@@ -71,7 +72,8 @@ class PixooREST:
             'reboot', view_func=self.reboot,
             methods=['GET', 'POST'])
         self.rest.add_url_rule(
-            '/sendtext/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/<int:movement_speed>/<int:direction>',
+            '/sendtext/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/'
+            '<int:movement_speed>/<int:direction>',
             'send_text_at_location_rgb', view_func=self.send_text_at_location_rgb,
             methods=['GET', 'POST'])
         self.rest.add_url_rule(
@@ -184,11 +186,6 @@ class PixooREST:
 
         return self.__respond_success()
 
-    def sound_buzzer(self, active_cycle_time=500, inactive_cycle_time=500, total_time=3000):
-        self.pixoo.sound_buzzer(active_cycle_time, inactive_cycle_time, total_time)
-
-        return self.__respond_success()
-
     def push(self):
         self.pixoo.push()
 
@@ -258,6 +255,11 @@ class PixooREST:
 
     def set_white_balance_rgb(self, white_balance_r, white_balance_g, white_balance_b):
         self.pixoo.set_white_balance_rgb(white_balance_r, white_balance_g, white_balance_b)
+
+        return self.__respond_success()
+
+    def sound_buzzer(self, active_cycle_time=500, inactive_cycle_time=500, total_time=3000):
+        self.pixoo.sound_buzzer(active_cycle_time, inactive_cycle_time, total_time)
 
         return self.__respond_success()
 
