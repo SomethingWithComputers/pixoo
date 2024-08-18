@@ -16,6 +16,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
+dynamic = ['dependencies', 'keywords']
+
 
 [project.urls]
 Homepage = "https://github.com/SomethingWithComputers/pixoo"
