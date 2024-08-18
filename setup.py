@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='pixoo',
-    version='0.9.0',
+    version='0.9.1',
     author='Ron Talman',
     description='A library to easily communicate with the Divoom Pixoo 64',
     license='CC BY-NC-SA',
