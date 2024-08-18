@@ -1,3 +1,5 @@
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
 # Pixoo
 
 A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi)
@@ -14,7 +16,8 @@ _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
 It's pretty much fully functional now.
 You can find the example in `examples/pixoorest` on how to start a script that runs the REST server.
-Most of the methods available in the Pixoo library are supported- except currently for loading a local image (for obvious
+Most of the methods available in the Pixoo library are supported- except currently for loading a local image (for
+obvious
 reasons).
 
 Basically, anywhere in the code you can start a (blocking!) server thread by making a `PixooREST` object as such:
@@ -23,9 +26,11 @@ Basically, anywhere in the code you can start a (blocking!) server thread by mak
 PixooREST()
 ```
 
-Look into the `PixooConfiguration` and `RESTConfiguration` objects if you want to do some customizing. This will be documented more later on.
+Look into the `PixooConfiguration` and `RESTConfiguration` objects if you want to do some customizing. This will be
+documented more later on.
 
-These are the currently supported REST calls, and can be made with both POST and GET calls. A more REST-like interface is coming, but I wanted to make the interface as easily accessible as possible for now.
+These are the currently supported REST calls, and can be made with both POST and GET calls. A more REST-like interface
+is coming, but I wanted to make the interface as easily accessible as possible for now.
 
 | Pixoo equivalent          | URL and variables                                                                                                                |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -165,3 +170,14 @@ the screen becomes available.
 
 .. and some other issues. Seems like for now, text can only really be scrolling left with most fonts. This will likely (
 hopefully?) be fixed by the dev team in the future.
+
+This work is licensed under a
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
+
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
+
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg

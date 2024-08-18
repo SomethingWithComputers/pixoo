@@ -15,7 +15,7 @@ def defined_value(value, default):
 
 
 def retrieve_current_kwh_usage():
-    response = requests.get(f'http://{os.environ.get('P1_IP_ADDRESS')}/api/v1/data')
+    response = requests.get(f'http://192.168.50.45/api/v1/data')
     data = response.json()
 
     return data['active_power_w']
@@ -24,12 +24,12 @@ def retrieve_current_kwh_usage():
 def main():
     print('[.] Booting..')
 
-    # Verify if the ip address is set, can't default this one
+    # Verify if the ip address is set, otherwise None
     ip_address = os.environ.get('PIXOO_IP_ADDRESS')
     if ip_address is None:
-        print('[x] Please set the `PIXOO_IP_ADDRESS` value in the .env file')
-        return
+        print('[!] No IP address has been provided, will attempt to find device on network')
 
+    # Pretty colors
     green = (99, 199, 77)
     red = (255, 0, 68)
     white = (255, 255, 255)
