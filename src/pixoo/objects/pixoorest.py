@@ -1,9 +1,6 @@
 from flask import Flask, jsonify
 
-from pixoo.configurations.pixooconfiguration import PixooConfiguration
-from pixoo.configurations.restconfiguration import RESTConfiguration
-from pixoo.enums.textscrolldirection import TextScrollDirection
-from pixoo.objects.pixoo import Pixoo
+from .. import Pixoo, PixooConfiguration, RESTConfiguration, TextScrollDirection
 
 
 class PixooREST:

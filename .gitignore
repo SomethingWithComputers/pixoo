@@ -1,12 +1,12 @@
 
-pixoo/__pycache__/
+src/pixoo/__pycache__/
 *.egg-info/
 dist/
 
-pixoo/configurations/__pycache__/
+src/pixoo/configurations/__pycache__/
 
-pixoo/constants/__pycache__/
+src/pixoo/constants/__pycache__/
 
-pixoo/enums/__pycache__/
+src/pixoo/enums/__pycache__/
 
-pixoo/objects/__pycache__/
+src/pixoo/objects/__pycache__/

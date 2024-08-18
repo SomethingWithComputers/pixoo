@@ -4,12 +4,10 @@ import json
 import requests
 from PIL import Image, ImageOps
 
-from pixoo.constants.font import retrieve_glyph
-from pixoo.enums.imageresamplemode import ImageResampleMode
-from pixoo.enums.textscrolldirection import TextScrollDirection
-from pixoo.objects.simulator import Simulator
-from pixoo.utilities import minimum_amount_of_steps, round_location, lerp_location, clamp_color, clamp, rgb_to_hex_color
-from .. import Palette, SimulatorConfiguration
+from .simulator import Simulator
+from .. import Palette, SimulatorConfiguration, ImageResampleMode, TextScrollDirection
+from ..constants.font import retrieve_glyph
+from ..utilities import minimum_amount_of_steps, round_location, lerp_location, clamp_color, rgb_to_hex_color, clamp
 
 
 class Pixoo:
