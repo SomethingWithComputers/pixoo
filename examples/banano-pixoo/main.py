@@ -4,7 +4,7 @@ import time
 import requests
 from dotenv import load_dotenv
 
-from pixoo import Pixoo, SimulatorConfig
+from pixoo import Pixoo, SimulatorConfiguration
 
 # Load .env variables
 load_dotenv()
@@ -32,7 +32,7 @@ def retrieve_current_price():
     market_data = data['market_data']
 
     return market_data['current_price'][currency], \
-           market_data['price_change_percentage_24h_in_currency'][currency]
+        market_data['price_change_percentage_24h_in_currency'][currency]
 
 
 def main():
@@ -61,7 +61,7 @@ def main():
     user_id = defined_value(os.environ.get('FAH_USER_ID'), '501878621')
 
     # Set up a connection and show the background
-    pixoo = Pixoo(ip_address, simulated=True, simulation_config=SimulatorConfig(4))
+    pixoo = Pixoo(ip_address, simulated=True, simulation_config=SimulatorConfiguration(4))
     pixoo.draw_image('background.png')
     # pixoo.set_brightness(100) # Only used sometimes if the screen isn't bright enough
     pixoo.draw_text('-----', (20, 49), green)

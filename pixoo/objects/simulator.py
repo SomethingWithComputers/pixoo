@@ -2,12 +2,8 @@ import tkinter
 
 from PIL import ImageTk, Image, ImageDraw
 
-from ._colors import Palette
-
-
-class SimulatorConfig:
-    def __init__(self, scale=4):
-        self.scale = scale
+from pixoo.configurations.simulatorconfiguration import SimulatorConfiguration
+from pixoo.constants.colors import Palette
 
 
 class Simulator:
@@ -67,6 +63,3 @@ class Simulator:
     def __prepare_image(self, image):
         image = image.resize(self.__image_size, Image.NEAREST)
         return ImageTk.PhotoImage(image)
-
-
-__all__ = (Simulator, SimulatorConfig)
