@@ -89,7 +89,13 @@ set to 4 it'll look like this on MacOS:
 
 ## Installation
 
-You can install the pixoo package as developer locally with next command running from cloned folder:
+You can install the library as a package via pip
+
+```shell
+pip install pixoo
+```
+
+Alternatively, you can install the pixoo package as developer locally with next command running from cloned folder:
 
 ```shell
 python -m pip install -e .
@@ -154,6 +160,24 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ```
 
 ## Known bugs
+
+### Simulator shows black screen on Macbook with M-processors
+
+Run the following commands (not tested personally, but based on
+this [Stack Overflow](https://stackoverflow.com/questions/73056296/tkinter-on-mac-shows-up-as-a-black-screen) thread)
+
+```shell
+brew uninstall tcl-tk uninstall
+pyenv uninstall 3.10 # Replace this with the global Python version you have installed
+brew install tcl-tk
+pyenv install 3.10
+pyenv global 3.10
+```
+
+You need to install tk via homebrew before installing Python with pyenv because pyenv will automatically try to use
+whatever tk package it can find when it installs Python.
+
+This will also work if you are using pyenv to upgrade from one version of Python to another.
 
 ### Previous buffer/image is still partially visible
 
