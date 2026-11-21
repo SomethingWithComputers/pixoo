@@ -30,3 +30,6 @@
 - Packaging metadata lives in `pyproject.toml` only; `setup.py` was removed.
 - Added a single-source version in `pixoo.__about__.__version__`.
 - Added a `Channel.BLACK_SCREEN` value for the documented channel `4`.
+- Dropped Python 3.10 support; the minimum supported version is now Python 3.11.
+- Raised dependency minimums: `requests` 2.34.2, `Pillow` 13.0, `Flask` 3.1.3, `python-dotenv` 1.2.4, `build` 1.6.1, `pytest` 9.2, `Ruff` 0.17.6, `Twine` 7.0.
+- Raised the setuptools build requirement to 84.2.

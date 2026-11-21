@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=84.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -12,11 +12,11 @@ description = "A library to easily communicate with Divoom Pixoo displays"
 license = "CC-BY-NC-SA-4.0"
 license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["pixoo", "divoom", "pixoo64"]
 dependencies = [
-    "requests>=2.32",
-    "pillow>=10.4",
+    "requests>=2.34.2",
+    "pillow>=13.0",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -24,7 +24,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -34,13 +33,13 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-rest = ["Flask>=3.0"]
-examples = ["python-dotenv>=1.0"]
+rest = ["Flask>=3.1.3"]
+examples = ["python-dotenv>=1.2.4"]
 dev = [
-    "build>=1.2",
-    "pytest>=8.0",
-    "ruff>=0.6",
-    "twine>=5.0",
+    "build>=1.6.1",
+    "pytest>=9.2",
+    "ruff>=0.17.6",
+    "twine>=7.0",
 ]
 
 [project.urls]
@@ -62,7 +61,7 @@ pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
 extend-exclude = ["examples", "examples.py"]
 
 [tool.ruff.lint]

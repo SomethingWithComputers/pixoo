@@ -2,7 +2,6 @@ import os
 import time
 
 from dotenv import load_dotenv
-
 from pixoo import Pixoo, FrameAnimatedImage
 
 # Load .env variables
@@ -27,16 +26,21 @@ def main():
     print('[.] Starting loop in 2 seconds')
     time.sleep(2)
     timeout = 1 / 3  # 3fps
-    while True:
-        pixoo.draw_image(background)
+    try:
+        while True:
+            pixoo.draw_image(background)
 
-        clanker_animation.draw_current_frame((27, 20))
-        clanker_animation.move_to_next_frame()
-        # Push to the display
-        pixoo.push()
+            clanker_animation.draw_current_frame((27, 20))
+            clanker_animation.move_to_next_frame()
+            # Push to the display
+            pixoo.push()
 
-        # Wait a bit before updating everything
-        time.sleep(timeout)
+            # Wait a bit before updating everything
+            time.sleep(timeout)
+
+    except KeyboardInterrupt:
+        print("[.] Shutting down..")
+    exit(0)
 
 
 if __name__ == '__main__':
