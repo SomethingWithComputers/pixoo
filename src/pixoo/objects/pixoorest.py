@@ -1,13 +1,29 @@
-from flask import Flask, jsonify
+try:
+    from flask import Flask, jsonify
+except ImportError as error:
+    raise ImportError(
+        'PixooREST requires Flask. Install it with: pip install "pixoo[rest]"'
+    ) from error
 
-from .. import Pixoo, PixooConfiguration, RESTConfiguration, TextScrollDirection
+from ..configurations.pixooconfiguration import PixooConfiguration
+from ..configurations.restconfiguration import RESTConfiguration
+from ..enums.textscrolldirection import TextScrollDirection
+from .pixoo import Pixoo, PixooError
 
 
 class PixooREST:
-    def __init__(self, pixoo_configuration=PixooConfiguration(), rest_configuration=RESTConfiguration()):
-        self.pixoo = Pixoo(pixoo_configuration.ip_address)
+    def __init__(
+        self,
+        pixoo_configuration=None,
+        rest_configuration=None,
+        pixoo=None,
+        run_server=True,
+    ):
+        pixoo_configuration = pixoo_configuration or PixooConfiguration()
+        self.rest_configuration = rest_configuration or RESTConfiguration()
+        self.pixoo = pixoo if pixoo is not None else Pixoo(**vars(pixoo_configuration))
 
-        self.rest = Flask(rest_configuration.name)
+        self.rest = Flask(self.rest_configuration.name)
         self.rest.add_url_rule('/clear/<int:r>/<int:g>/<int:b>', 'clear', view_func=self.clear_rgb,
                                methods=['GET', 'POST'])
         self.rest.add_url_rule('/drawcharacter/<string:character>/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>',
@@ -69,7 +85,7 @@ class PixooREST:
             'reboot', view_func=self.reboot,
             methods=['GET', 'POST'])
         self.rest.add_url_rule(
-            '/sendtext/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/'
+            '/sendtext/<string:text>/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/'
             '<int:movement_speed>/<int:direction>',
             'send_text_at_location_rgb', view_func=self.send_text_at_location_rgb,
             methods=['GET', 'POST'])
@@ -118,7 +134,24 @@ class PixooREST:
             'set_white_balance_rgb', view_func=self.set_white_balance_rgb,
             methods=['GET', 'POST'])
 
-        self.rest.run(rest_configuration.host, rest_configuration.port, rest_configuration.debug)
+        @self.rest.errorhandler(PixooError)
+        def handle_pixoo_error(error):
+            return jsonify({'success': False, 'error': str(error)}), 502
+
+        @self.rest.errorhandler(ValueError)
+        def handle_value_error(error):
+            return jsonify({'success': False, 'error': str(error)}), 400
+
+        if run_server:
+            self.run()
+
+    def run(self):
+        self.rest.run(
+            self.rest_configuration.host,
+            self.rest_configuration.port,
+            self.rest_configuration.debug,
+            use_reloader=False,
+        )
 
     def clear_rgb(self, r, g, b):
         self.pixoo.clear_rgb(r, g, b)

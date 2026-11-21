@@ -125,16 +125,16 @@ pixoo.set_brightness(100)
 
 '''
 Send text to the display using (currently seemingly in alpha) text functionality
-def send_text(self, text, xy=(0, 0), color=(255, 255, 255), identifier=1, font=2, width=64,
+def send_text(self, text, xy=(0, 0), color=(255, 255, 255), identifier=1, font=2, width=None,
               movement_speed=0,
-              direction=TextScrollDirection.RIGHT):
+              direction=TextScrollDirection.LEFT):
 The first argument is the string to be displayed (required)
 The second argument is the position to place the string (optional, default (0, 0))
 the third argument is the color of the text (optional, default (255, 255, 255))
 The fourth is the text identifier. Use this to update existing text on the display (optional, default 1, has to be
-between 0 and 20)
+between 0 and 19)
 The fifth is the font identifier (optional, default 2, has to be between 0 and 7 but support seems limited for some fonts)
-The sixth argument is the width of the "textbox" (optional, default 64)
+The sixth argument is the width of the "textbox" (optional, defaults to the display size)
 The seventh argument is the movement speed of the text in case it doesn't fit the "textbox" (optional, default 0)
     **NOTE:** Currently there seems to be no way to stop the movement
 The eight and final argument is the movement direction of the text (optional, default TextScrollDirection.LEFT)

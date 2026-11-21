@@ -3,7 +3,6 @@ import time
 
 import requests
 from dotenv import load_dotenv
-
 from pixoo import Pixoo
 
 # Load .env variables
@@ -15,8 +14,9 @@ def defined_value(value, default):
 
 
 def retrieve_current_kwh_usage():
-    response = requests.get(f'http://192.168.50.45/api/v1/data')
+    response = requests.get(f'http://192.168.50.44/api/v1/data')
     data = response.json()
+    # print(data)
 
     return data['active_power_w']
 
@@ -36,7 +36,7 @@ def main():
 
     brightness = int(defined_value(os.environ.get('BRIGHTNESS'), 100))
     simulated = int(defined_value(os.environ.get('SIMULATED'), 0)) == 1
-    timeout = int(defined_value(os.environ.get('TIMEOUT'), 60))
+    timeout = int(defined_value(os.environ.get('TIMEOUT'), 1))
 
     if simulated:
         print('[.] Starting in simulation mode')
@@ -90,6 +90,5 @@ def main():
             return
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
