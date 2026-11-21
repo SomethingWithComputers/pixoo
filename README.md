@@ -1,9 +1,8 @@
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
 # Pixoo
 
 A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi)
-
-A simple working example application using this "rendering" framework can be found
-here: https://github.com/SomethingWithComputers/pixoo-banano
 
 An non-trivial example, with re-connecting and API-calls can be found in `examples/power-usage`.
 In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
@@ -17,7 +16,8 @@ _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
 It's pretty much fully functional now.
 You can find the example in `examples/pixoorest` on how to start a script that runs the REST server.
-Most of the methods available in the Pixoo library are supported- except currently for loading a local image (for obvious
+Most of the methods available in the Pixoo library are supported- except currently for loading a local image (for
+obvious
 reasons).
 
 Basically, anywhere in the code you can start a (blocking!) server thread by making a `PixooREST` object as such:
@@ -26,9 +26,11 @@ Basically, anywhere in the code you can start a (blocking!) server thread by mak
 PixooREST()
 ```
 
-Look into the `PixooConfiguration` and `RESTConfiguration` objects if you want to do some customizing. This will be documented more later on.
+Look into the `PixooConfiguration` and `RESTConfiguration` objects if you want to do some customizing. This will be
+documented more later on.
 
-These are the currently supported REST calls, and can be made with both POST and GET calls. A more REST-like interface is coming, but I wanted to make the interface as easily accessible as possible for now.
+These are the currently supported REST calls, and can be made with both POST and GET calls. A more REST-like interface
+is coming, but I wanted to make the interface as easily accessible as possible for now.
 
 | Pixoo equivalent          | URL and variables                                                                                                                |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -156,6 +158,24 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 ## Known bugs
 
+### Simulator shows black screen on Macbook with M-processors
+
+Run the following commands (not tested personally, but based on
+this [Stack Overflow](https://stackoverflow.com/questions/73056296/tkinter-on-mac-shows-up-as-a-black-screen) thread)
+
+```shell
+brew uninstall tcl-tk uninstall
+pyenv uninstall 3.10 # Replace this with the global Python version you have installed
+brew install tcl-tk
+pyenv install 3.10
+pyenv global 3.10
+```
+
+You need to install tk via homebrew before installing Python with pyenv because pyenv will automatically try to use
+whatever tk package it can find when it installs Python.
+
+This will also work if you are using pyenv to upgrade from one version of Python to another.
+
 ### Previous buffer/image is still partially visible
 
 Unfortunately, the Divoom Pixoo 64 doesn't seem quite ready for prime time- *yet*. There are some known buffer issues
@@ -171,3 +191,14 @@ the screen becomes available.
 
 .. and some other issues. Seems like for now, text can only really be scrolling left with most fonts. This will likely (
 hopefully?) be fixed by the dev team in the future.
+
+This work is licensed under a
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
+
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
+
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
