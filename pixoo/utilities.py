@@ -8,7 +8,7 @@ def clamp(value, minimum=0, maximum=255):
 
 
 def clamp_color(rgb):
-    return clamp(rgb[0]), clamp(rgb[1]), clamp(rgb[2])
+    return int(clamp(rgb[0])), int(clamp(rgb[1])), int(clamp(rgb[2]))
 
 
 def lerp(start, end, interpolant):
@@ -24,7 +24,8 @@ def minimum_amount_of_steps(xy1, xy2):
 
 
 def rgb_to_hex_color(rgb):
-    return f'#{rgb[0]:0>2X}{rgb[1]:0>2X}{rgb[2]:0>2X}'
+    red, green, blue = (int(clamp(value, 0, 255)) for value in rgb)
+    return f'#{red:02X}{green:02X}{blue:02X}'
 
 
 def round_location(xy):

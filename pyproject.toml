@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pixoo"
+dynamic = ["version"]
+authors = [
+    { name = "Ron Talman", email = "ron@somethingwithcomputers.com" },
+]
+description = "A library to easily communicate with Divoom Pixoo displays"
+license = "CC-BY-NC-SA-4.0"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["pixoo", "divoom", "pixoo64"]
+dependencies = [
+    "requests>=2.32",
+    "pillow>=10.4",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.optional-dependencies]
+rest = ["Flask>=3.0"]
+examples = ["python-dotenv>=1.0"]
+dev = [
+    "build>=1.2",
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "twine>=5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/SomethingWithComputers/pixoo"
+Repository = "https://github.com/SomethingWithComputers/pixoo"
+Issues = "https://github.com/SomethingWithComputers/pixoo/issues"
+Changelog = "https://github.com/SomethingWithComputers/pixoo/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = { attr = "pixoo.__about__.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pixoo*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = ["examples", "examples.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

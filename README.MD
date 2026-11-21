@@ -9,7 +9,7 @@ An non-trivial example, with re-connecting and API-calls can be found in `exampl
 In this example I read the current kWh from my P1-meter and display the current power usage of my house in a neat little
 graph.
 
-![Simulator buffer simulator](./images/screenshot-2.png)
+![Simulator buffer simulator](https://raw.githubusercontent.com/SomethingWithComputers/pixoo/main/images/screenshot-2.png)
 
 _Tested on a Pixoo 64, with Python 3.12 on MacOS Sonoma._
 
@@ -47,7 +47,7 @@ These are the currently supported REST calls, and can be made with both POST and
 | play_gif_file_url         | `/playnetgif/<path:gif_file_url>`                                                                                                |
 | push                      | `/push`                                                                                                                          |
 | reboot                    | `/reboot`                                                                                                                        |
-| send_text_at_location_rgb | `/sendtext/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/<int:movement_speed>/<int:direction>` |
+| send_text_at_location_rgb | `/sendtext/<string:text>/<int:x>/<int:y>/<int:r>/<int:g>/<int:b>/<int:identifier>/<int:font>/<int:width>/<int:movement_speed>/<int:direction>` |
 | set_brightness            | `/setbrightness/<int:brightness>`                                                                                                |
 | set_channel               | `/setchannel/<int:channel>`                                                                                                      |
 | set_clock                 | `/setclock/<int:clock_id>`                                                                                                       |
@@ -76,31 +76,34 @@ don't expect to see anything on your device when simulating.
 The simulator can be activated as such:
 
 ```python
-pixoo = Pixoo('192.168.1.137', simulated=True, simulation_config=SimulatorConfig(4))
+pixoo = Pixoo('192.168.1.137', simulated=True, simulation_config=SimulatorConfiguration(4))
 ```
 
-The SimulatorConfig *currently* only takes one argument, which is the `scale` to display the images at. Should be 1 or a
-multiple of 2 if you want nice looking results. It seems like 4 and 8 are working great, in my experience. With `scale`
-set to 4 it'll look like this on MacOS:
+The `SimulatorConfiguration` currently only takes one argument, which is the `scale` to display the images at. Should
+be 1 or a multiple of 2 if you want nice looking results. It seems like 4 and 8 are working great, in my experience.
+With `scale` set to 4 it'll look like this on MacOS:
 
-![Simulator buffer simulator](./images/screenshot-1.png)
+![Simulator buffer simulator](https://raw.githubusercontent.com/SomethingWithComputers/pixoo/main/images/screenshot-1.png)
 
 ## Installation
 
-You can install the pixoo package as developer locally with next command running from cloned folder:
+You can install the library as a package via pip:
 
 ```shell
-python -m pip install -e .
+pip install pixoo
 ```
 
-Or Simply install the required dependencies via PIP. Navigate to the directory where you installed this library. Then
-execute:
+The REST server needs Flask, which is an optional extra:
 
 ```shell
-pip3 install -r requirements.txt
+pip install "pixoo[rest]"
 ```
 
-Install the requirements.txt via pip install
+Alternatively, install the package as a developer from a cloned folder:
+
+```shell
+python -m pip install -e ".[dev,rest]"
+```
 
 On some newer versions of MacOS, if you want to use the simulator you might have to manually install the `tkinter`
 library. I use brew:
